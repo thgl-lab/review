@@ -110,7 +110,7 @@
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
-    max-width: 480px;
+    max-width: 560px;
     opacity: 0;
     animation: fadeUp 0.7s ease 0.36s forwards;
   }
@@ -271,9 +271,46 @@
     line-height: 1.6;
   }
 
-  @media (max-width: 720px) {
-    .problem { padding: 88px 20px 100px; }
-    .problem .cards { grid-template-columns: 1fr; }
+  /* ---------- Tablet (≤1024px) ---------- */
+  @media (max-width: 1024px) {
+    .hero .tags-row { max-width: 420px; }
+
+    .problem { padding: 96px 40px 116px; }
+    .problem .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      max-width: 640px;
+    }
+    .problem .card:last-child { grid-column: 1 / -1; max-width: 100%; }
+  }
+
+  /* ---------- Mobile (≤640px) ---------- */
+  @media (max-width: 640px) {
+    .hero { padding: 28px 20px; }
+    .hero .badge { font-size: 12px; padding: 7px 14px; margin-bottom: 22px; }
+    .hero .logo { font-size: clamp(40px, 15vw, 64px); }
+    .hero .tagline { font-size: clamp(15px, 4.2vw, 18px); margin-top: 18px; }
+    .hero .tags-row { gap: 8px; max-width: 300px; margin-top: 28px; }
+    .hero .tags-row span { font-size: 12.5px; padding: 6px 12px; border-radius: 14px; }
+    .scroll-hint { bottom: 20px; font-size: 11px; }
+
+    .problem { padding: 72px 20px 88px; }
+    .problem .sub { margin-top: 16px; }
+    .problem .cards {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 44px;
+      max-width: 420px;
+    }
+    .problem .card:last-child { grid-column: auto; }
+    .problem .card { padding: 26px 22px; border-radius: 22px; }
+    .problem .punch { margin-top: 40px; padding: 16px 22px; border-radius: 18px; }
+  }
+
+  /* ---------- Short / landscape phones ---------- */
+  @media (max-height: 480px) and (orientation: landscape) {
+    .hero { min-height: auto; padding: 56px 24px 40px; }
+    .scroll-hint { display: none; }
   }
 </style>
 </head>
