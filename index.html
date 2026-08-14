@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>여기찜 — 상황에 맞는 맛집 아카이브</title>
+<style>
+  @font-face {
+    font-family: 'HakgyoansimDunggeunmiso';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2') format('woff2');
+    font-weight: 700;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'HakgyoansimDunggeunmiso';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-R.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'MitmiFont';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_1@1.0/Ownglyph_meetme-Rg.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+  }
+  @import url('https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css');
+
+  :root {
+    --cream: #FEEAC9;
+    --pink: #FDACAC;
+    --coral: #FD7979;
+    --warmgray: #4A3F3B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Wanted Sans Variable', -apple-system, sans-serif;
+    background: var(--cream);
+    color: var(--warmgray);
+    overflow-x: hidden;
+  }
+
+  .heading {
+    font-family: 'MitmiFont', 'Wanted Sans Variable', sans-serif;
+    font-weight: 400;
+  }
+
+  .logo {
+    font-family: 'HakgyoansimDunggeunmiso', 'Wanted Sans Variable', sans-serif;
+    font-weight: 700;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px 24px;
+    position: relative;
+  }
+
+  .hero .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffffaa;
+    border: 1.5px solid var(--pink);
+    color: var(--coral);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  .hero .logo {
+    font-size: clamp(48px, 11vw, 88px);
+    line-height: 1.2;
+    color: var(--warmgray);
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.12s forwards;
+  }
+
+  .hero .logo span {
+    color: var(--coral);
+  }
+
+  .hero .tagline {
+    margin-top: 22px;
+    font-size: clamp(16px, 2.6vw, 22px);
+    font-weight: 500;
+    color: var(--warmgray);
+    max-width: 560px;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.24s forwards;
+  }
+
+  .hero .tags-row {
+    margin-top: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 480px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.36s forwards;
+  }
+
+  .hero .tags-row span {
+    background: #fff;
+    border: 1.5px solid var(--pink);
+    border-radius: 16px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--warmgray);
+    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+  }
+
+  .hero .tags-row span:hover {
+    background: var(--coral);
+    color: #fff;
+    transform: translateY(-3px);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--warmgray);
+    opacity: 0.6;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .scroll-hint .arrow {
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--warmgray);
+    border-bottom: 2px solid var(--warmgray);
+    transform: rotate(45deg);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  /* ---------- Problem section ---------- */
+  .problem {
+    padding: 120px 24px 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .problem .eyebrow {
+    color: var(--coral);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+  }
+
+  .problem h2 {
+    font-family: 'MitmiFont', 'Wanted Sans Variable', sans-serif;
+    font-weight: 400;
+    font-size: clamp(26px, 4.4vw, 40px);
+    line-height: 1.5;
+    max-width: 720px;
+  }
+
+  .problem h2 em {
+    font-style: normal;
+    color: var(--coral);
+    background: linear-gradient(transparent 62%, var(--pink) 62%);
+  }
+
+  .problem .sub {
+    margin-top: 20px;
+    font-size: clamp(15px, 1.8vw, 17px);
+    color: var(--warmgray);
+    opacity: 0.85;
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  .problem .cards {
+    margin-top: 64px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    max-width: 920px;
+    width: 100%;
+  }
+
+  .problem .card {
+    background: #fff;
+    border-radius: 28px;
+    padding: 32px 24px;
+    text-align: left;
+    box-shadow: 0 12px 30px -18px rgba(74, 63, 59, 0.35);
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+  }
+
+  .problem .card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .problem .card:hover {
+    box-shadow: 0 18px 36px -16px rgba(253, 121, 121, 0.4);
+    transform: translateY(-6px);
+  }
+
+  .problem .card .icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  .problem .card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .problem .card p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--warmgray);
+    opacity: 0.8;
+  }
+
+  .problem .punch {
+    margin-top: 56px;
+    font-family: 'MitmiFont', 'Wanted Sans Variable', sans-serif;
+    font-weight: 400;
+    font-size: clamp(18px, 2.6vw, 24px);
+    color: var(--warmgray);
+    background: var(--pink);
+    border-radius: 20px;
+    padding: 18px 32px;
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 720px) {
+    .problem { padding: 88px 20px 100px; }
+    .problem .cards { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <section class="hero">
+    <span class="badge">🍽️ 나만의 상황별 맛집 아카이브</span>
+    <h1 class="logo">여기<span>찜</span></h1>
+    <p class="tagline">인스타에서 발견한 맛집, 상황에 맞게 저장하고<br>다시 꺼내보는 가장 쉬운 방법</p>
+    <div class="tags-row">
+      <span>혼밥</span><span>카공</span><span>데이트</span><span>가족 모임</span><span>친구 모임</span><span>회식/술자리</span><span>기념일</span><span>비즈니스</span>
+    </div>
+    <div class="scroll-hint">
+      <span>스크롤해서 더 보기</span>
+      <span class="arrow"></span>
+    </div>
+  </section>
+
+  <section class="problem">
+    <p class="eyebrow">PROBLEM</p>
+    <h2 class="heading">저장은 했는데, <em>다시 못 찾은</em> 맛집 있나요?</h2>
+    <p class="sub">인스타 저장, 지도 앱 저장, 그리고 그냥 기억…<br>맛집 정보가 여기저기 흩어지면 결국 다시 찾지 못합니다.</p>
+
+    <div class="cards">
+      <div class="card"><div class="icon">📱</div><h3>흩어진 저장 채널</h3><p>인스타 저장, 지도 앱 저장, 캡처, 기억…<br>어디에 저장했는지조차 헷갈려요.</p></div>
+      <div class="card"><div class="icon">🔍</div><h3>상황 검색이 안 됨</h3><p>"카공하기 좋은 곳", "데이트하기 좋은 곳"<br>기존 지도 앱은 이런 검색을 지원하지 않아요.</p></div>
+      <div class="card"><div class="icon">😮‍💨</div><h3>결국 다시 검색</h3><p>분명 저장해둔 맛집인데,<br>매번 처음부터 다시 찾게 돼요.</p></div>
+    </div>
+
+    <p class="punch">모든 맛집에 <em style="color:var(--coral)">상황 태그</em>를 붙여,<br>필요한 순간 가장 빠르게 찾아드려요.</p>
+  </section>
+
+  <script>
+    const cards = document.querySelectorAll('.problem .card');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 120);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    cards.forEach(card => io.observe(card));
+  </script>
+
+</body>
+</html>
