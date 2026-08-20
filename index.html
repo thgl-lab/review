@@ -26,10 +26,40 @@
   @import url('https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css');
 
   :root {
+    /* ---- brand colors (unchanged) ---- */
     --cream: #FEEAC9;
     --pink: #FDACAC;
     --coral: #FD7979;
     --warmgray: #4A3F3B;
+
+    /* ---- derived neutrals ---- */
+    --surface: #FFFFFF;
+    --hairline: rgba(74, 63, 59, 0.10);
+    --muted: rgba(74, 63, 59, 0.72);
+    --faint: rgba(74, 63, 59, 0.52);
+
+    /* ---- 8px spacing scale ---- */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 24px;
+    --sp-6: 32px;
+    --sp-7: 48px;
+    --sp-8: 64px;
+    --sp-9: 96px;
+
+    /* ---- radius scale (moderate, never full pill) ---- */
+    --r-sm: 12px;
+    --r-md: 16px;
+    --r-lg: 20px;
+    --r-xl: 28px;
+
+    /* ---- Airbnb-influenced soft shadow scale ---- */
+    --shadow-sm: 0 1px 3px rgba(74, 63, 59, 0.08), 0 1px 2px rgba(74, 63, 59, 0.05);
+    --shadow-md: 0 10px 24px -10px rgba(74, 63, 59, 0.18);
+    --shadow-lg: 0 24px 48px -16px rgba(74, 63, 59, 0.24);
+    --shadow-accent: 0 20px 40px -16px rgba(253, 121, 121, 0.45);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,6 +81,66 @@
   .logo {
     font-family: 'HakgyoansimDunggeunmiso', 'Wanted Sans Variable', sans-serif;
     font-weight: 700;
+    text-decoration: none;
+    color: var(--warmgray);
+  }
+
+  /* ---------- Layout container (mobile-first: 375 / 768 / 1440) ---------- */
+  .container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  @media (min-width: 768px) {
+    .container { padding-inline: 40px; }
+  }
+
+  @media (min-width: 1440px) {
+    .container { max-width: 1120px; padding-inline: 40px; }
+  }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    padding-block: 20px;
+    transition: background 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease, backdrop-filter 0.3s ease;
+  }
+
+  .nav.scrolled {
+    background: rgba(254, 234, 201, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 1px 0 var(--hairline);
+    padding-block: 14px;
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo { font-size: 20px; }
+  .nav-logo span { color: var(--coral); }
+
+  .nav-cta {
+    background: var(--coral);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 10px 20px;
+    border-radius: var(--r-sm);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .nav-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-accent);
   }
 
   /* ---------- Hero ---------- */
@@ -61,7 +151,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 32px 24px;
+    padding: 108px 20px 40px;
     position: relative;
   }
 
@@ -69,35 +159,32 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #ffffffaa;
+    background: var(--surface);
     border: 1.5px solid var(--pink);
     color: var(--coral);
     font-weight: 600;
-    font-size: 14px;
-    padding: 8px 18px;
-    border-radius: 999px;
-    margin-bottom: 28px;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: var(--r-sm);
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
     opacity: 0;
     animation: fadeUp 0.7s ease forwards;
   }
 
   .hero .logo {
-    font-size: clamp(48px, 11vw, 88px);
-    line-height: 1.2;
-    color: var(--warmgray);
+    font-size: clamp(44px, 15vw, 88px);
+    line-height: 1.15;
     opacity: 0;
     animation: fadeUp 0.7s ease 0.12s forwards;
   }
 
-  .hero .logo span {
-    color: var(--coral);
-  }
+  .hero .logo span { color: var(--coral); }
 
   .hero .tagline {
-    margin-top: 22px;
-    font-size: clamp(16px, 2.6vw, 22px);
+    margin-top: 18px;
+    font-size: clamp(15px, 4.2vw, 22px);
     font-weight: 500;
-    color: var(--warmgray);
     max-width: 560px;
     line-height: 1.6;
     opacity: 0;
@@ -105,41 +192,43 @@
   }
 
   .hero .tags-row {
-    margin-top: 36px;
+    margin-top: 28px;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     justify-content: center;
-    max-width: 560px;
+    max-width: 320px;
     opacity: 0;
     animation: fadeUp 0.7s ease 0.36s forwards;
   }
 
   .hero .tags-row span {
-    background: #fff;
+    background: var(--surface);
     border: 1.5px solid var(--pink);
-    border-radius: 16px;
-    padding: 8px 16px;
-    font-size: 14px;
+    border-radius: var(--r-sm);
+    padding: 6px 12px;
+    font-size: 12.5px;
     font-weight: 600;
-    color: var(--warmgray);
-    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
   }
 
   .hero .tags-row span:hover {
     background: var(--coral);
     color: #fff;
+    border-color: var(--coral);
     transform: translateY(-3px);
+    box-shadow: var(--shadow-accent);
   }
 
   .scroll-hint {
     position: absolute;
-    bottom: 36px;
+    bottom: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 11px;
     color: var(--warmgray);
     opacity: 0.6;
     animation: bounce 2s ease-in-out infinite;
@@ -165,7 +254,10 @@
 
   /* ---------- Problem section ---------- */
   .problem {
-    padding: 120px 24px 140px;
+    padding-block: 72px 88px;
+  }
+
+  .problem .inner {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -175,16 +267,16 @@
   .problem .eyebrow {
     color: var(--coral);
     font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.04em;
-    margin-bottom: 14px;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
   }
 
   .problem h2 {
     font-family: 'MitmiFont', 'Wanted Sans Variable', sans-serif;
     font-weight: 400;
-    font-size: clamp(26px, 4.4vw, 40px);
-    line-height: 1.5;
+    font-size: clamp(24px, 6.5vw, 42px);
+    line-height: 1.45;
     max-width: 720px;
   }
 
@@ -195,32 +287,33 @@
   }
 
   .problem .sub {
-    margin-top: 20px;
-    font-size: clamp(15px, 1.8vw, 17px);
-    color: var(--warmgray);
-    opacity: 0.85;
-    max-width: 560px;
+    margin-top: 16px;
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 520px;
     line-height: 1.7;
   }
 
+  /* Card grid — Airbnb-style: white surface, hairline border, subtle resting shadow, crisp hover lift */
   .problem .cards {
-    margin-top: 64px;
+    margin-top: 44px;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    max-width: 920px;
+    grid-template-columns: 1fr;
+    gap: 16px;
     width: 100%;
+    max-width: 420px;
   }
 
   .problem .card {
-    background: #fff;
-    border-radius: 28px;
-    padding: 32px 24px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-lg);
+    padding: 26px 22px;
     text-align: left;
-    box-shadow: 0 12px 30px -18px rgba(74, 63, 59, 0.35);
+    box-shadow: var(--shadow-sm);
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   }
 
   .problem .card.visible {
@@ -229,94 +322,188 @@
   }
 
   .problem .card:hover {
-    box-shadow: 0 18px 36px -16px rgba(253, 121, 121, 0.4);
-    transform: translateY(-6px);
+    box-shadow: var(--shadow-accent);
+    border-color: transparent;
+    transform: translateY(-4px);
   }
 
   .problem .card .icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-md);
     background: var(--cream);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    margin-bottom: 18px;
+    font-size: 20px;
+    margin-bottom: 16px;
   }
 
   .problem .card h3 {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
     margin-bottom: 8px;
   }
 
   .problem .card p {
-    font-size: 14px;
+    font-size: 13.5px;
     line-height: 1.6;
-    color: var(--warmgray);
-    opacity: 0.8;
+    color: var(--muted);
   }
 
   .problem .punch {
-    margin-top: 56px;
+    margin-top: 44px;
     font-family: 'MitmiFont', 'Wanted Sans Variable', sans-serif;
     font-weight: 400;
-    font-size: clamp(18px, 2.6vw, 24px);
+    font-size: clamp(17px, 4.6vw, 24px);
     color: var(--warmgray);
     background: var(--pink);
-    border-radius: 20px;
-    padding: 18px 32px;
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 18px 24px;
     max-width: 640px;
     line-height: 1.6;
   }
 
-  /* ---------- Tablet (≤1024px) ---------- */
-  @media (max-width: 1024px) {
-    .hero .tags-row { max-width: 420px; }
+  /* ---------- CTA banner ---------- */
+  .cta { padding-block: 24px 88px; }
 
-    .problem { padding: 96px 40px 116px; }
+  .cta-card {
+    background: linear-gradient(135deg, var(--coral), #FD9A9A);
+    border-radius: var(--r-xl);
+    padding: 48px 28px;
+    text-align: center;
+    color: #fff;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .cta-card h2 {
+    font-family: 'MitmiFont', 'Wanted Sans Variable', sans-serif;
+    font-weight: 400;
+    font-size: clamp(22px, 6vw, 34px);
+    line-height: 1.45;
+    color: #fff;
+  }
+
+  .cta-card p {
+    margin-top: 12px;
+    font-size: 14.5px;
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.6;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    margin-top: 26px;
+    background: #fff;
+    color: var(--coral);
+    font-weight: 700;
+    font-size: 14.5px;
+    padding: 14px 30px;
+    border-radius: var(--r-sm);
+    text-decoration: none;
+    box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 30px -10px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    padding-block: 40px 32px;
+    text-align: center;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .footer-logo { font-size: 19px; }
+  .footer-logo span { color: var(--coral); }
+
+  .footer-tagline {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--faint);
+    max-width: 360px;
+    margin-inline: auto;
+    line-height: 1.6;
+  }
+
+  .footer-copy {
+    margin-top: 20px;
+    font-size: 11.5px;
+    color: var(--faint);
+  }
+
+  /* ================================================================
+     Breakpoint: Tablet (≥768px)
+     ================================================================ */
+  @media (min-width: 768px) {
+    .nav-logo { font-size: 22px; }
+    .nav-cta { font-size: 14px; padding: 11px 22px; }
+
+    .hero { padding: 120px 40px 56px; }
+    .hero .badge { font-size: 14px; padding: 8px 18px; margin-bottom: 28px; }
+    .hero .tagline { margin-top: 22px; }
+    .hero .tags-row { max-width: 480px; gap: 10px; margin-top: 34px; }
+    .hero .tags-row span { font-size: 14px; padding: 8px 16px; border-radius: var(--r-md); }
+
+    .problem { padding-block: 100px 120px; }
+    .problem .sub { font-size: 16px; }
     .problem .cards {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
       max-width: 640px;
+      margin-top: 56px;
     }
-    .problem .card:last-child { grid-column: 1 / -1; max-width: 100%; }
+    .problem .card:last-child { grid-column: 1 / -1; }
+    .problem .card { padding: 30px 26px; }
+    .problem .punch { margin-top: 52px; font-size: clamp(19px, 3vw, 24px); padding: 20px 28px; }
+
+    .cta { padding-block: 32px 120px; }
+    .cta-card { padding: 64px 56px; }
+    .cta-btn { font-size: 15.5px; padding: 15px 34px; }
+
+    .footer { padding-block: 56px 40px; }
+    .footer-tagline { font-size: 14px; }
   }
 
-  /* ---------- Mobile (≤640px) ---------- */
-  @media (max-width: 640px) {
-    .hero { padding: 28px 20px; }
-    .hero .badge { font-size: 12px; padding: 7px 14px; margin-bottom: 22px; }
-    .hero .logo { font-size: clamp(40px, 15vw, 64px); }
-    .hero .tagline { font-size: clamp(15px, 4.2vw, 18px); margin-top: 18px; }
-    .hero .tags-row { gap: 8px; max-width: 300px; margin-top: 28px; }
-    .hero .tags-row span { font-size: 12.5px; padding: 6px 12px; border-radius: 14px; }
-    .scroll-hint { bottom: 20px; font-size: 11px; }
+  /* ================================================================
+     Breakpoint: Desktop (≥1440px)
+     ================================================================ */
+  @media (min-width: 1440px) {
+    .hero { padding-top: 132px; }
+    .hero .tags-row { max-width: 600px; }
 
-    .problem { padding: 72px 20px 88px; }
-    .problem .sub { margin-top: 16px; }
     .problem .cards {
-      grid-template-columns: 1fr;
-      gap: 16px;
-      margin-top: 44px;
-      max-width: 420px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      max-width: 100%;
+      gap: 24px;
     }
     .problem .card:last-child { grid-column: auto; }
-    .problem .card { padding: 26px 22px; border-radius: 22px; }
-    .problem .punch { margin-top: 40px; padding: 16px 22px; border-radius: 18px; }
+    .problem .card:hover { transform: translateY(-6px); }
+
+    .cta-card { padding: 72px 96px; }
   }
 
   /* ---------- Short / landscape phones ---------- */
   @media (max-height: 480px) and (orientation: landscape) {
-    .hero { min-height: auto; padding: 56px 24px 40px; }
+    .hero { min-height: auto; padding: 96px 24px 40px; }
     .scroll-hint { display: none; }
   }
 </style>
 </head>
 <body>
 
-  <section class="hero">
+  <nav class="nav" id="nav">
+    <div class="nav-inner container">
+      <a class="nav-logo logo" href="#top">여기<span>찜</span></a>
+      <a class="nav-cta" href="place-search.html">찜 시작하기</a>
+    </div>
+  </nav>
+
+  <section class="hero" id="top">
     <span class="badge">🍽️ 나만의 상황별 맛집 아카이브</span>
     <h1 class="logo">여기<span>찜</span></h1>
     <p class="tagline">인스타에서 발견한 맛집, 상황에 맞게 저장하고<br>다시 꺼내보는 가장 쉬운 방법</p>
@@ -330,18 +517,36 @@
   </section>
 
   <section class="problem">
-    <p class="eyebrow">PROBLEM</p>
-    <h2 class="heading">저장은 했는데, <em>다시 못 찾은</em> 맛집 있나요?</h2>
-    <p class="sub">인스타 저장, 지도 앱 저장, 그리고 그냥 기억…<br>맛집 정보가 여기저기 흩어지면 결국 다시 찾지 못합니다.</p>
+    <div class="inner container">
+      <p class="eyebrow">PROBLEM</p>
+      <h2 class="heading">저장은 했는데, <em>다시 못 찾은</em> 맛집 있나요?</h2>
+      <p class="sub">인스타 저장, 지도 앱 저장, 그리고 그냥 기억…<br>맛집 정보가 여기저기 흩어지면 결국 다시 찾지 못합니다.</p>
 
-    <div class="cards">
-      <div class="card"><div class="icon">📱</div><h3>흩어진 저장 채널</h3><p>인스타 저장, 지도 앱 저장, 캡처, 기억…<br>어디에 저장했는지조차 헷갈려요.</p></div>
-      <div class="card"><div class="icon">🔍</div><h3>상황 검색이 안 됨</h3><p>"카공하기 좋은 곳", "데이트하기 좋은 곳"<br>기존 지도 앱은 이런 검색을 지원하지 않아요.</p></div>
-      <div class="card"><div class="icon">😮‍💨</div><h3>결국 다시 검색</h3><p>분명 저장해둔 맛집인데,<br>매번 처음부터 다시 찾게 돼요.</p></div>
+      <div class="cards">
+        <div class="card"><div class="icon">📱</div><h3>흩어진 저장 채널</h3><p>인스타 저장, 지도 앱 저장, 캡처, 기억…<br>어디에 저장했는지조차 헷갈려요.</p></div>
+        <div class="card"><div class="icon">🔍</div><h3>상황 검색이 안 됨</h3><p>"카공하기 좋은 곳", "데이트하기 좋은 곳"<br>기존 지도 앱은 이런 검색을 지원하지 않아요.</p></div>
+        <div class="card"><div class="icon">😮‍💨</div><h3>결국 다시 검색</h3><p>분명 저장해둔 맛집인데,<br>매번 처음부터 다시 찾게 돼요.</p></div>
+      </div>
+
+      <p class="punch">모든 맛집에 <em style="color:var(--coral)">상황 태그</em>를 붙여,<br>필요한 순간 가장 빠르게 찾아드려요.</p>
     </div>
-
-    <p class="punch">모든 맛집에 <em style="color:var(--coral)">상황 태그</em>를 붙여,<br>필요한 순간 가장 빠르게 찾아드려요.</p>
   </section>
+
+  <section class="cta">
+    <div class="cta-card container">
+      <h2 class="heading">오늘 저장한 맛집,<br>다음엔 1초 만에 찾아요</h2>
+      <p>상황 태그 하나만 눌러도 완성되는 나만의 맛집 리스트</p>
+      <a class="cta-btn" href="place-search.html">여기찜 시작하기</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner container">
+      <span class="logo footer-logo">여기<span>찜</span></span>
+      <p class="footer-tagline">인스타에서 발견한 맛집, 상황에 맞게 저장하고 다시 꺼내보는 가장 쉬운 방법</p>
+      <p class="footer-copy">© 2026 YeogiJjim. Made for 소희.</p>
+    </div>
+  </footer>
 
   <script>
     const cards = document.querySelectorAll('.problem .card');
@@ -354,6 +559,14 @@
       });
     }, { threshold: 0.2 });
     cards.forEach(card => io.observe(card));
+
+    const nav = document.getElementById('nav');
+    const onScroll = () => {
+      if (window.scrollY > 24) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
   </script>
 
 </body>

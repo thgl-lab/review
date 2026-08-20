@@ -31,3 +31,9 @@ Currently used:
 - Logo/"여기찜" wordmark only: `HakgyoansimDunggeunmiso` (학교안심 둥근미소, KERIS, OFL) via `cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/`
 - Other headings: `MitmiFont` (밑미, noonnu font_page/1335) via `cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_1@1.0/`
 - Body text: `Wanted Sans Variable` via `cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/`
+
+## 반응형
+- 모바일 (375)
+- 태블릿 (768)
+- 데스크톱 (1440)
+으로 브레이크포인트 설정
