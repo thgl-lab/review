@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>찜 목록 — 여기찜</title>
+<style>
+  @font-face {
+    font-family: 'HakgyoansimDunggeunmiso';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2') format('woff2');
+    font-weight: 700;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'MitmiFont';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_1@1.0/Ownglyph_meetme-Rg.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+  }
+  @import url('https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css');
+
+  :root {
+    --cream: #FEEAC9;
+    --pink: #FDACAC;
+    --coral: #FD7979;
+    --warmgray: #4A3F3B;
+    --radius-lg: 22px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Wanted Sans Variable', -apple-system, sans-serif;
+    background: var(--cream);
+    color: var(--warmgray);
+    min-height: 100vh;
+  }
+
+  .heading {
+    font-family: 'MitmiFont', 'Wanted Sans Variable', sans-serif;
+    font-weight: 400;
+  }
+
+  a { color: inherit; }
+
+  /* ---------- Topbar ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    background: #fffdf9cc;
+    backdrop-filter: blur(6px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar .logo {
+    font-family: 'HakgyoansimDunggeunmiso', 'Wanted Sans Variable', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    text-decoration: none;
+    color: var(--warmgray);
+  }
+
+  .topbar .logo span { color: var(--coral); }
+
+  /* ---------- Main layout ---------- */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+
+  .page-title {
+    font-size: clamp(26px, 6vw, 34px);
+    margin-bottom: 8px;
+  }
+
+  .page-desc {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  .result-meta {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.75;
+    margin-bottom: 14px;
+    min-height: 18px;
+  }
+
+  /* ---------- Card grid ---------- */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .place-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: 0 10px 26px -20px rgba(74, 63, 59, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .category-chip {
+    background: var(--pink);
+    color: var(--warmgray);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  .remove-btn {
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    border: 1.5px solid var(--coral);
+    background: #fff;
+    color: var(--coral);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .remove-btn:hover { background: var(--coral); color: #fff; }
+
+  .place-name {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .place-address {
+    font-size: 13.5px;
+    opacity: 0.85;
+  }
+
+  .place-category {
+    font-size: 12.5px;
+    opacity: 0.6;
+  }
+
+  .card-footer {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+    border-top: 1px solid var(--cream);
+    padding-top: 10px;
+  }
+
+  .place-phone { opacity: 0.75; }
+
+  .place-link {
+    text-decoration: none;
+    font-weight: 700;
+    color: var(--coral);
+  }
+
+  .place-link:hover { text-decoration: underline; }
+
+  /* ---------- States ---------- */
+  .state-msg {
+    text-align: center;
+    padding: 48px 20px;
+    font-size: 14px;
+    opacity: 0.7;
+    background: #fff;
+    border-radius: var(--radius-lg);
+    line-height: 1.7;
+  }
+
+  .state-msg .btn-link {
+    display: inline-block;
+    margin-top: 14px;
+    font-weight: 700;
+    color: var(--coral);
+    text-decoration: none;
+  }
+
+  .state-msg .btn-link:hover { text-decoration: underline; }
+
+  /* ---------- Tablet (>=768px) ---------- */
+  @media (min-width: 768px) {
+    main { padding: 32px 32px 100px; }
+
+    .card-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+  }
+
+  /* ---------- Desktop (>=1440px) ---------- */
+  @media (min-width: 1440px) {
+    main { padding: 40px 0 120px; }
+
+    .card-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <a class="logo" href="index.html">여기<span>찜</span></a>
+    <div id="authArea"></div>
+  </header>
+
+  <main>
+    <h1 class="page-title heading">찜 목록</h1>
+    <p class="page-desc">담아둔 맛집을 한눈에 모아봤어요.</p>
+
+    <p class="state-msg" id="loginRequired" hidden>
+      로그인 후 이용할 수 있어요.<br>오른쪽 위 로그인 버튼을 눌러주세요.
+    </p>
+
+    <section id="listWrap" hidden>
+      <p class="result-meta" id="resultMeta"></p>
+      <div class="card-grid" id="cardGrid"></div>
+      <p class="state-msg" id="emptyState" hidden>
+        아직 담은 맛집이 없어요.<br>
+        <a class="btn-link" href="place-search.html">맛집 담으러 가기 →</a>
+      </p>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="auth.js"></script>
+  <script src="saved-places.js"></script>
+</body>
+</html>

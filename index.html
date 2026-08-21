@@ -123,6 +123,12 @@
     justify-content: space-between;
   }
 
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
   .nav-logo { font-size: 20px; }
   .nav-logo span { color: var(--coral); }
 
@@ -142,6 +148,29 @@
     transform: translateY(-2px);
     box-shadow: var(--shadow-accent);
   }
+
+  .nav-saved-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--pink);
+    color: var(--warmgray);
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 10px 20px;
+    border-radius: var(--r-sm);
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .nav-saved-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-accent);
+  }
+
+  .nav-saved-link[hidden] { display: none; }
 
   /* ---------- Hero ---------- */
   .hero {
@@ -499,7 +528,11 @@
   <nav class="nav" id="nav">
     <div class="nav-inner container">
       <a class="nav-logo logo" href="#top">여기<span>찜</span></a>
-      <a class="nav-cta" href="place-search.html">찜 시작하기</a>
+      <div class="nav-right">
+        <div id="authArea"></div>
+        <a class="nav-cta" href="place-search.html">찜 시작하기</a>
+        <a class="nav-saved-link" id="savedListLink" href="saved-places.html" hidden>찜 목록</a>
+      </div>
     </div>
   </nav>
 
@@ -548,6 +581,21 @@
     </div>
   </footer>
 
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    (function () {
+      const savedListLink = document.getElementById('savedListLink');
+      function toggleSavedListLink(user) {
+        if (savedListLink) savedListLink.hidden = !user;
+      }
+      if (window.YeogiJjimAuth) {
+        window.YeogiJjimAuth.getCurrentUser().then(toggleSavedListLink);
+        window.YeogiJjimAuth.onAuthChange(toggleSavedListLink);
+      }
+    })();
+  </script>
   <script>
     const cards = document.querySelectorAll('.problem .card');
     const io = new IntersectionObserver((entries) => {

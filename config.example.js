@@ -23,9 +23,17 @@
  *   2) 이 키도 브라우저에 그대로 노출되니, 가능하면 별도 프로젝트로
  *      발급하고 사용량 알림을 걸어두는 걸 권장합니다
  *
+ * 로그인 기능을 쓰려면 SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY도 채워야 합니다.
+ *   1) https://supabase.com/dashboard 에서 프로젝트 선택
+ *   2) Project Settings > API 에서 Project URL, anon/publishable key 복사
+ *   3) publishable key는 브라우저에 노출되도록 설계된 키라 그대로 써도 됩니다
+ *      (비밀번호 처리 등 민감한 로직은 전부 Supabase 서버가 담당합니다)
+ *
  * config.js는 .gitignore에 등록되어 있어 git에 커밋되지 않습니다.
  * 이 예시 파일(config.example.js)에는 실제 키를 넣지 마세요.
  * ============================================================ */
 const KAKAO_REST_API_KEY = "YOUR_KAKAO_REST_API_KEY_HERE";
 const GOOGLE_PLACES_API_KEY = "YOUR_GOOGLE_PLACES_API_KEY_HERE";
 const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
+const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL_HERE";
+const SUPABASE_PUBLISHABLE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";

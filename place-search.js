@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
   el.cardGrid.addEventListener("click", (e) => {
     const saveBtn = e.target.closest(".save-btn");
     if (saveBtn) {
-      toggleSave(saveBtn);
+      handleSaveClick(saveBtn);
       return;
     }
 
@@ -306,7 +306,19 @@ function buildCard(place, isSaved) {
   return card;
 }
 
-/* ---------- 담기 (localStorage 임시 저장) ---------- */
+/* ---------- 담기 (localStorage 임시 저장, 로그인 필요) ---------- */
+async function handleSaveClick(btn) {
+  const auth = window.YeogiJjimAuth;
+  const user = auth ? await auth.getCurrentUser() : null;
+
+  if (!user) {
+    if (auth) auth.openLoginModal("담기는 로그인 후 이용할 수 있어요.");
+    return;
+  }
+
+  toggleSave(btn);
+}
+
 function getSavedIds() {
   const list = JSON.parse(localStorage.getItem(SAVED_PLACES_KEY) || "[]");
   return new Set(list.map((p) => p.id));
