@@ -92,9 +92,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   el.cardGrid.addEventListener("click", (e) => {
-    const btn = e.target.closest(".save-btn");
-    if (!btn) return;
-    toggleSave(btn);
+    const saveBtn = e.target.closest(".save-btn");
+    if (saveBtn) {
+      toggleSave(saveBtn);
+      return;
+    }
+
+    if (e.target.closest("a")) return; // 카카오맵 링크 등은 그대로 동작
+    if (e.target.closest(".review-panel")) return; // 열린 리뷰 패널 내부 클릭은 무시
+
+    const card = e.target.closest(".place-card");
+    if (card) toggleReviewPanel(card);
   });
 });
 
@@ -289,8 +297,11 @@ function buildCard(place, isSaved) {
       ${place.phone ? `<span class="place-phone">${escapeHtml(place.phone)}</span>` : "<span></span>"}
       <a class="place-link" href="${escapeHtml(place.place_url)}" target="_blank" rel="noopener noreferrer">카카오맵에서 보기</a>
     </div>
+    <p class="review-hint">리뷰 보기 ▾</p>
+    <div class="review-panel" hidden></div>
   `;
 
+  card.dataset.place = JSON.stringify(place);
   card.querySelector(".save-btn").dataset.place = JSON.stringify(place);
   return card;
 }

@@ -232,6 +232,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    cursor: pointer;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
   }
 
@@ -310,6 +311,202 @@
   }
 
   .place-link:hover { text-decoration: underline; }
+
+  /* ---------- 구글 리뷰 패널 ---------- */
+  .review-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--coral);
+    text-align: center;
+  }
+
+  .review-panel {
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--cream);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: default;
+  }
+
+  .review-loading,
+  .review-empty {
+    font-size: 13px;
+    opacity: 0.75;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .review-place-name {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .review-summary {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+
+  .review-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .review-item {
+    background: var(--cream);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+
+  .review-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+
+  .review-author {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .review-stars {
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .review-time {
+    font-size: 11.5px;
+    opacity: 0.6;
+    margin-bottom: 4px;
+  }
+
+  .review-text {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .review-maps-link {
+    align-self: flex-start;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--coral);
+    text-decoration: none;
+  }
+
+  .review-maps-link:hover { text-decoration: underline; }
+
+  /* ---------- AI 리뷰 분석 ---------- */
+  .ai-analysis {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--pink);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ai-section-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--coral);
+  }
+
+  .ai-loading,
+  .ai-error {
+    font-size: 13px;
+    opacity: 0.75;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .sentiment-bar {
+    display: flex;
+    width: 100%;
+    height: 12px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--cream);
+  }
+
+  .sentiment-segment { height: 100%; }
+  .sentiment-segment.positive { background: #4caf7d; }
+  .sentiment-segment.neutral { background: #f5c242; }
+  .sentiment-segment.negative { background: #e0554f; }
+
+  .sentiment-legend {
+    display: flex;
+    gap: 14px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .legend-dot.positive { background: #4caf7d; }
+  .legend-dot.neutral { background: #f5c242; }
+  .legend-dot.negative { background: #e0554f; }
+
+  .wordcloud-wrap {
+    background: var(--cream);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+  }
+
+  .wordcloud-canvas {
+    display: block;
+    width: 100%;
+    height: 200px;
+  }
+
+  .wordcloud-fallback {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 14px;
+  }
+
+  .wordcloud-tag { font-weight: 700; }
+
+  .ai-summary-bubble {
+    position: relative;
+    background: #fff;
+    border: 1.5px solid var(--pink);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    font-weight: 600;
+  }
+
+  .ai-summary-bubble::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-left: 1.5px solid var(--pink);
+    border-top: 1.5px solid var(--pink);
+    transform: rotate(45deg);
+  }
 
   #loadMoreBtn {
     display: block;
@@ -401,6 +598,9 @@
   </main>
 
   <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
+  <script src="gemini-analysis.js"></script>
+  <script src="google-reviews.js"></script>
   <script src="place-search.js"></script>
 </body>
 </html>
