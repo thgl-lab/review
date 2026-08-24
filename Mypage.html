@@ -36,6 +36,7 @@
     background: var(--cream);
     color: var(--warmgray);
     min-height: 100vh;
+    padding-bottom: 80px;
   }
 
   .heading {
@@ -68,6 +69,78 @@
 
   .topbar .logo span { color: var(--coral); }
 
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .topbar-nav-link {
+    display: none;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(74, 63, 59, 0.08), 0 1px 2px rgba(74, 63, 59, 0.05);
+    transition: transform 0.22s ease;
+  }
+
+  .topbar-nav-link:hover { transform: translateY(-2px); }
+  .topbar-nav-link[hidden] { display: none; }
+
+  .topbar-nav-link.primary {
+    background: var(--coral);
+    color: #fff;
+  }
+
+  /* ---------- 모바일 하단 탭바 ---------- */
+  .bottom-tabbar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 50;
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border-top: 1px solid rgba(74, 63, 59, 0.1);
+    box-shadow: 0 -4px 16px rgba(74, 63, 59, 0.08);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 64px;
+    padding: 10px 4px;
+    text-decoration: none;
+    color: var(--warmgray);
+    font-size: 11px;
+    font-weight: 600;
+    position: relative;
+  }
+
+  .tab-item svg { display: block; }
+
+  .tab-item[hidden] { display: none; }
+
+  .tab-item.active { color: var(--coral); font-weight: 700; }
+
+  .tab-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 28px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--coral);
+  }
+
   /* ---------- Main layout ---------- */
   main {
     max-width: 1200px;
@@ -93,6 +166,64 @@
     opacity: 0.75;
     margin-bottom: 14px;
     min-height: 18px;
+  }
+
+  /* ---------- 상황 태그 필터 바 ---------- */
+  .tag-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .tag-filter-chip {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    border: 1.5px solid var(--pink);
+    background: #fff;
+    color: var(--warmgray);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .tag-filter-chip.active {
+    background: var(--coral);
+    border-color: var(--coral);
+    color: #fff;
+  }
+
+  /* ---------- 카드 안 상황 태그 편집 칩 ---------- */
+  .tag-edit-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .tag-edit-chip {
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    border: 1.5px solid var(--pink);
+    background: #fff;
+    color: var(--warmgray);
+    opacity: 0.6;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .tag-edit-chip:hover { opacity: 0.85; }
+
+  .tag-edit-chip.active {
+    background: var(--coral);
+    border-color: var(--coral);
+    color: #fff;
+    opacity: 1;
   }
 
   /* ---------- Card grid ---------- */
@@ -227,6 +358,10 @@
 
   /* ---------- Tablet (>=768px) ---------- */
   @media (min-width: 768px) {
+    body { padding-bottom: 0; }
+    .topbar-nav-link { display: inline-flex; align-items: center; }
+    .bottom-tabbar { display: none; }
+
     main { padding: 32px 32px 100px; }
 
     .card-grid {
@@ -250,8 +385,26 @@
 
   <header class="topbar">
     <a class="logo" href="index.html">여기<span>찜</span></a>
-    <div id="authArea"></div>
+    <div class="topbar-right">
+      <div id="authArea"></div>
+      <a class="topbar-nav-link primary" href="place-search.html">맛집 검색</a>
+    </div>
   </header>
+
+  <nav class="bottom-tabbar" aria-label="주요 기능 바로가기">
+    <a class="tab-item" href="index.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+      <span>홈</span>
+    </a>
+    <a class="tab-item" href="place-search.html">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span>맛집 검색</span>
+    </a>
+    <a class="tab-item active auth-required-link" href="Mypage.html" hidden>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4.8-3-9-6.4-9-10.5C3 7.2 5.2 5 8 5c1.7 0 3.2.9 4 2.3C12.8 5.9 14.3 5 16 5c2.8 0 5 2.2 5 5.5 0 4.1-4.2 7.5-9 10.5z"/></svg>
+      <span>맛집주머니</span>
+    </a>
+  </nav>
 
   <main>
     <h1 class="page-title heading">맛집주머니</h1>
@@ -262,19 +415,23 @@
     </p>
 
     <section id="listWrap" hidden>
+      <div class="tag-filter-bar" id="tagFilterBar" role="group" aria-label="상황 태그로 필터"></div>
       <p class="result-meta" id="resultMeta"></p>
       <div class="card-grid" id="cardGrid"></div>
       <p class="state-msg" id="emptyState" hidden>
         아직 담은 맛집이 없어요. 검색하러 가볼까요?<br>
         <a class="btn-link" href="place-search.html">맛집 검색하러 가기</a>
       </p>
+      <p class="state-msg" id="filterEmptyState" hidden></p>
     </section>
   </main>
 
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="auth.js"></script>
+  <script src="auth-nav-toggle.js"></script>
   <script src="saved-places-store.js"></script>
+  <script src="situation-tags.js"></script>
   <script src="Mypage.js"></script>
 </body>
 </html>

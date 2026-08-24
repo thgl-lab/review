@@ -4,18 +4,27 @@
  * 내가 담은 맛집을 Supabase saved_places 테이블에서 불러옵니다.
  * 조회 시 user_id로 따로 거르지 않고 전체를 요청하며, RLS 정책이
  * 알아서 본인 소유 행만 돌려줍니다. (saved-places-store.js#listMine)
+ *
+ * 상황 태그(situation_tags)는 담을 때는 비워두고, 이 화면에서
+ * 카드마다 칩을 눌러 나중에 붙입니다. 상단 필터 바에서 태그
+ * 하나를 고르면 그 태그가 붙은 카드만 보여줍니다.
  * ============================================================ */
 
 const el = {};
 let guardModalOpened = false;
+let allRows = [];
+let activeFilter = null; // null = 전체
 
 document.addEventListener("DOMContentLoaded", () => {
   el.loginRequired = document.getElementById("loginRequired");
   el.listWrap = document.getElementById("listWrap");
+  el.tagFilterBar = document.getElementById("tagFilterBar");
   el.cardGrid = document.getElementById("cardGrid");
   el.emptyState = document.getElementById("emptyState");
+  el.filterEmptyState = document.getElementById("filterEmptyState");
   el.resultMeta = document.getElementById("resultMeta");
 
+  buildFilterBar();
   init();
 });
 
@@ -32,7 +41,7 @@ async function applyAuthState(user) {
     guardModalOpened = false;
     el.loginRequired.hidden = true;
     el.listWrap.hidden = false;
-    await renderList();
+    await loadList();
     return;
   }
 
@@ -45,20 +54,79 @@ async function applyAuthState(user) {
   }
 }
 
-/* ---------- 목록 렌더링 ---------- */
-async function renderList() {
-  const list = await window.YeogiJjimSaves.listMine();
+/* ---------- 상단 상황 태그 필터 바 ---------- */
+function getTagFromUrl() {
+  const tag = new URLSearchParams(window.location.search).get("tag");
+  return tag && (window.SITUATION_TAGS || []).includes(tag) ? tag : null;
+}
+
+function buildFilterBar() {
+  const tags = window.SITUATION_TAGS || [];
+  activeFilter = getTagFromUrl();
+  el.tagFilterBar.innerHTML = "";
+
+  const allChip = document.createElement("button");
+  allChip.type = "button";
+  allChip.className = "tag-filter-chip" + (activeFilter ? "" : " active");
+  allChip.textContent = "전체";
+  allChip.dataset.tag = "";
+  el.tagFilterBar.appendChild(allChip);
+
+  tags.forEach((tag) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "tag-filter-chip" + (tag === activeFilter ? " active" : "");
+    chip.textContent = tag;
+    chip.dataset.tag = tag;
+    el.tagFilterBar.appendChild(chip);
+  });
+
+  el.tagFilterBar.addEventListener("click", (e) => {
+    const chip = e.target.closest(".tag-filter-chip");
+    if (!chip) return;
+
+    activeFilter = chip.dataset.tag || null;
+    el.tagFilterBar.querySelectorAll(".tag-filter-chip").forEach((c) => {
+      c.classList.toggle("active", c === chip);
+    });
+    renderList();
+  });
+}
+
+/* ---------- 목록 불러오기 + 렌더링 ---------- */
+async function loadList() {
+  allRows = await window.YeogiJjimSaves.listMine();
+  renderList();
+}
+
+function renderList() {
   el.cardGrid.innerHTML = "";
 
-  if (list.length === 0) {
+  if (allRows.length === 0) {
     el.emptyState.hidden = false;
+    el.filterEmptyState.hidden = true;
     el.resultMeta.textContent = "";
     return;
   }
-
   el.emptyState.hidden = true;
-  el.resultMeta.textContent = `담은 맛집 ${list.length}곳`;
-  list.forEach((row) => el.cardGrid.appendChild(buildCard(row)));
+
+  const visibleRows = activeFilter
+    ? allRows.filter((row) => (row.situation_tags || []).includes(activeFilter))
+    : allRows;
+
+  if (visibleRows.length === 0) {
+    el.filterEmptyState.hidden = false;
+    el.filterEmptyState.textContent = `"${activeFilter}" 태그를 붙인 맛집이 아직 없어요. 카드에서 태그를 눌러 붙여보세요.`;
+    el.resultMeta.textContent = "";
+    return;
+  }
+  el.filterEmptyState.hidden = true;
+
+  el.resultMeta.textContent = activeFilter
+    ? `"${activeFilter}" 태그 · ${visibleRows.length}곳`
+    : `담은 맛집 ${visibleRows.length}곳`;
+
+  visibleRows.forEach((row) => el.cardGrid.appendChild(buildCard(row)));
 }
 
 function buildCard(row) {
@@ -78,10 +146,13 @@ function buildCard(row) {
     <h3 class="place-name">${escapeHtml(row.place_name)}</h3>
     <p class="place-address">${escapeHtml(address)}</p>
     <p class="place-category">${escapeHtml(row.category_name || "")}</p>
+    <div class="tag-edit-row"></div>
     <div class="card-footer">
       <a class="place-link" href="${escapeHtml(googleMapsUrl(row))}" target="_blank" rel="noopener noreferrer">구글맵 보기</a>
     </div>
   `;
+
+  renderTagEditRow(card, row);
 
   card.querySelector(".remove-x").addEventListener("click", async (e) => {
     const btn = e.currentTarget;
@@ -95,13 +166,51 @@ function buildCard(row) {
       return;
     }
 
-    card.remove();
-    const remaining = el.cardGrid.children.length;
-    el.resultMeta.textContent = remaining > 0 ? `담은 맛집 ${remaining}곳` : "";
-    if (remaining === 0) el.emptyState.hidden = false;
+    allRows = allRows.filter((r) => r.id !== row.id);
+    renderList();
   });
 
   return card;
+}
+
+/* ---------- 카드 안 상황 태그 편집 ---------- */
+function renderTagEditRow(card, row) {
+  const wrap = card.querySelector(".tag-edit-row");
+  const tags = window.SITUATION_TAGS || [];
+  wrap.innerHTML = "";
+
+  tags.forEach((tag) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "tag-edit-chip" + ((row.situation_tags || []).includes(tag) ? " active" : "");
+    chip.textContent = tag;
+    chip.addEventListener("click", () => toggleTag(row, tag, chip));
+    wrap.appendChild(chip);
+  });
+}
+
+async function toggleTag(row, tag, chip) {
+  if (chip.disabled) return;
+  const current = row.situation_tags || [];
+  const nextTags = current.includes(tag) ? current.filter((t) => t !== tag) : [...current, tag];
+
+  chip.disabled = true;
+  const { error } = await window.YeogiJjimSaves.updateTags(row.id, nextTags);
+  chip.disabled = false;
+
+  if (error) {
+    console.error("[여기찜] 상황 태그 수정 실패", error);
+    alert("태그 저장 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+    return;
+  }
+
+  row.situation_tags = nextTags;
+  chip.classList.toggle("active", nextTags.includes(tag));
+
+  // 필터가 걸려있는 상태에서 태그를 뗐다면 이 카드는 더 이상 보이면 안 되므로 다시 그린다.
+  if (activeFilter && !nextTags.includes(tag)) {
+    renderList();
+  }
 }
 
 /* ---------- 유틸 ---------- */

@@ -1,7 +1,7 @@
 /* ============================================================
  * 여기찜 — 담기(찜) 데이터 저장소 (Supabase saved_places 테이블)
  * ============================================================
- * place-search.js / saved-places.js가 공통으로 사용합니다.
+ * place-search.js / home.js / Mypage.js가 공통으로 사용합니다.
  * 이 스크립트보다 먼저 config.js, supabase-js, auth.js가
  * 로드되어 있어야 합니다.
  *
@@ -24,6 +24,7 @@ window.YeogiJjimSaves = (function () {
       lng: place.x ? Number(place.x) : null,
       place_url: place.place_url || null,
       phone: place.phone || null,
+      situation_tags: [],
     };
   }
 
@@ -38,28 +39,10 @@ window.YeogiJjimSaves = (function () {
       .eq("user_id", userId);
 
     if (error) {
-      console.error("[여기찜] 찜 목록 조회 실패", error);
+      console.error("[여기찜] 담은 가게 id 조회 실패", error);
       return new Set();
     }
     return new Set((data || []).map((row) => row.kakao_place_id));
-  }
-
-  /* 찜 목록 페이지용 — 전체 행(최근 담은 순) */
-  async function listSavedPlaces(userId) {
-    const client = getClient();
-    if (!client || !userId) return [];
-
-    const { data, error } = await client
-      .from("saved_places")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("[여기찜] 찜 목록 조회 실패", error);
-      return [];
-    }
-    return data || [];
   }
 
   async function save(userId, place) {
@@ -103,5 +86,12 @@ window.YeogiJjimSaves = (function () {
     return client.from("saved_places").delete().eq("id", id);
   }
 
-  return { listSavedIds, listSavedPlaces, save, unsave, listMine, removeById };
+  /* 맛집주머니(Mypage)용 — 상황 태그 전체 교체 (행의 id(PK) 기준, 소유권 확인은 RLS에 맡긴다). */
+  async function updateTags(id, tags) {
+    const client = getClient();
+    if (!client) return { error: new Error("로그인이 필요해요.") };
+    return client.from("saved_places").update({ situation_tags: tags }).eq("id", id);
+  }
+
+  return { listSavedIds, save, unsave, listMine, removeById, updateTags };
 })();

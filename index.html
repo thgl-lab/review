@@ -173,7 +173,7 @@
   .nav-saved-link[hidden] { display: none; }
 
   /* ---------- Mobile bottom tab bar ---------- */
-  /* Primary nav (홈 / 맛집 검색 / 찜 목록) lives here on mobile; the
+  /* Primary nav (홈 / 맛집 검색 / 맛집주머니) lives here on mobile; the
      header CTA/saved-link move back on tablet+ where this bar is hidden. */
   .nav-cta, .nav-saved-link { display: none; }
 
@@ -282,7 +282,7 @@
     animation: fadeUp 0.7s ease 0.36s forwards;
   }
 
-  .hero .tags-row span {
+  .hero .tags-row a {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -295,11 +295,13 @@
     font-size: 13px;
     font-weight: 600;
     line-height: 1.3;
+    color: var(--warmgray);
+    text-decoration: none;
     box-shadow: var(--shadow-sm);
     transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
   }
 
-  .hero .tags-row span:hover {
+  .hero .tags-row a:hover {
     background: var(--coral);
     color: #fff;
     border-color: var(--coral);
@@ -681,7 +683,7 @@
     .hero .badge { font-size: 14px; padding: 8px 18px; margin-bottom: 28px; }
     .hero .tagline { margin-top: 22px; }
     .hero .tags-row { display: flex; flex-wrap: wrap; justify-content: center; max-width: 480px; gap: 10px; margin-top: 34px; }
-    .hero .tags-row span { display: inline-flex; min-height: 0; font-size: 14px; padding: 8px 16px; border-radius: var(--r-md); }
+    .hero .tags-row a { display: inline-flex; min-height: 0; font-size: 14px; padding: 8px 16px; border-radius: var(--r-md); }
 
     .ranking, .recommend { padding-block: 88px 32px; }
     .ranking .sub, .recommend .sub { font-size: 15px; }
@@ -751,7 +753,7 @@
       <div class="nav-right">
         <div id="authArea"></div>
         <a class="nav-cta" href="place-search.html">찜 시작하기</a>
-        <a class="nav-saved-link" id="savedListLink" href="Mypage.html" hidden>찜 목록</a>
+        <a class="nav-saved-link auth-required-link" href="Mypage.html" hidden>맛집주머니</a>
       </div>
     </div>
   </nav>
@@ -765,9 +767,9 @@
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
       <span>맛집 검색</span>
     </a>
-    <a class="tab-item" id="tabSavedLink" href="Mypage.html" hidden>
+    <a class="tab-item auth-required-link" href="Mypage.html" hidden>
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4.8-3-9-6.4-9-10.5C3 7.2 5.2 5 8 5c1.7 0 3.2.9 4 2.3C12.8 5.9 14.3 5 16 5c2.8 0 5 2.2 5 5.5 0 4.1-4.2 7.5-9 10.5z"/></svg>
-      <span>찜 목록</span>
+      <span>맛집주머니</span>
     </a>
   </nav>
 
@@ -776,7 +778,7 @@
     <h1 class="logo">여기<span>찜</span></h1>
     <p class="tagline">인스타에서 발견한 맛집, 상황에 맞게 저장하고<br>다시 꺼내보는 가장 쉬운 방법</p>
     <div class="tags-row">
-      <span>혼밥</span><span>카공</span><span>데이트</span><span>가족 모임</span><span>친구 모임</span><span>회식/술자리</span><span>기념일</span><span>비즈니스</span>
+      <a href="Mypage.html?tag=혼밥">혼밥</a><a href="Mypage.html?tag=카공">카공</a><a href="Mypage.html?tag=데이트">데이트</a><a href="Mypage.html?tag=가족%20모임">가족 모임</a><a href="Mypage.html?tag=친구%20모임">친구 모임</a><a href="Mypage.html?tag=회식%2F술자리">회식/술자리</a><a href="Mypage.html?tag=기념일">기념일</a><a href="Mypage.html?tag=비즈니스">비즈니스</a>
     </div>
     <div class="scroll-hint">
       <span>스크롤해서 더 보기</span>
@@ -839,22 +841,9 @@
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="auth.js"></script>
+  <script src="auth-nav-toggle.js"></script>
   <script src="saved-places-store.js"></script>
   <script src="home.js"></script>
-  <script>
-    (function () {
-      const savedListLink = document.getElementById('savedListLink');
-      const tabSavedLink = document.getElementById('tabSavedLink');
-      function toggleSavedListLink(user) {
-        if (savedListLink) savedListLink.hidden = !user;
-        if (tabSavedLink) tabSavedLink.hidden = !user;
-      }
-      if (window.YeogiJjimAuth) {
-        window.YeogiJjimAuth.getCurrentUser().then(toggleSavedListLink);
-        window.YeogiJjimAuth.onAuthChange(toggleSavedListLink);
-      }
-    })();
-  </script>
   <script>
     const cards = document.querySelectorAll('.problem .card');
     const io = new IntersectionObserver((entries) => {
