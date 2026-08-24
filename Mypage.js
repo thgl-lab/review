@@ -1,13 +1,13 @@
 /* ============================================================
- * 여기찜 — 찜 목록 (로그인한 사용자만 열람 가능)
+ * 여기찜 — 맛집주머니 (로그인한 사용자만 열람 가능)
  * ============================================================
- * 담은 맛집은 Supabase의 saved_places 테이블에서 불러옵니다.
- * (saved-places-store.js 참고)
+ * 내가 담은 맛집을 Supabase saved_places 테이블에서 불러옵니다.
+ * 조회 시 user_id로 따로 거르지 않고 전체를 요청하며, RLS 정책이
+ * 알아서 본인 소유 행만 돌려줍니다. (saved-places-store.js#listMine)
  * ============================================================ */
 
 const el = {};
 let guardModalOpened = false;
-let currentUser = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   el.loginRequired = document.getElementById("loginRequired");
@@ -28,8 +28,6 @@ async function init() {
 }
 
 async function applyAuthState(user) {
-  currentUser = user;
-
   if (user) {
     guardModalOpened = false;
     el.loginRequired.hidden = true;
@@ -43,13 +41,13 @@ async function applyAuthState(user) {
 
   if (!guardModalOpened) {
     guardModalOpened = true;
-    window.YeogiJjimAuth.openLoginModal("찜 목록을 보려면 로그인이 필요해요.");
+    window.YeogiJjimAuth.openLoginModal("맛집주머니를 보려면 로그인이 필요해요.");
   }
 }
 
 /* ---------- 목록 렌더링 ---------- */
 async function renderList() {
-  const list = await window.YeogiJjimSaves.listSavedPlaces(currentUser.id);
+  const list = await window.YeogiJjimSaves.listMine();
   el.cardGrid.innerHTML = "";
 
   if (list.length === 0) {
@@ -72,33 +70,56 @@ function buildCard(row) {
   const address = row.address || "주소 정보 없음";
 
   card.innerHTML = `
+    <button type="button" class="remove-x" aria-label="찜 삭제">✕</button>
     <div class="card-top">
       <span class="category-chip">${escapeHtml(categoryChip)}</span>
-      <button type="button" class="remove-btn">찜 해제</button>
+      <span class="saved-date">${formatSavedDate(row.created_at)}</span>
     </div>
     <h3 class="place-name">${escapeHtml(row.place_name)}</h3>
     <p class="place-address">${escapeHtml(address)}</p>
     <p class="place-category">${escapeHtml(row.category_name || "")}</p>
     <div class="card-footer">
-      ${row.phone ? `<span class="place-phone">${escapeHtml(row.phone)}</span>` : "<span></span>"}
-      ${row.place_url ? `<a class="place-link" href="${escapeHtml(row.place_url)}" target="_blank" rel="noopener noreferrer">카카오맵에서 보기</a>` : "<span></span>"}
+      <a class="place-link" href="${escapeHtml(googleMapsUrl(row))}" target="_blank" rel="noopener noreferrer">구글맵 보기</a>
     </div>
   `;
 
-  const removeBtn = card.querySelector(".remove-btn");
-  removeBtn.addEventListener("click", async () => {
-    removeBtn.disabled = true;
-    const { error } = await window.YeogiJjimSaves.unsave(currentUser.id, row.kakao_place_id);
+  card.querySelector(".remove-x").addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+
+    const { error } = await window.YeogiJjimSaves.removeById(row.id);
     if (error) {
-      console.error("[여기찜] 찜 해제 실패", error);
-      alert("찜 해제 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
-      removeBtn.disabled = false;
+      console.error("[여기찜] 맛집주머니 삭제 실패", error);
+      alert("삭제 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+      btn.disabled = false;
       return;
     }
-    renderList();
+
+    card.remove();
+    const remaining = el.cardGrid.children.length;
+    el.resultMeta.textContent = remaining > 0 ? `담은 맛집 ${remaining}곳` : "";
+    if (remaining === 0) el.emptyState.hidden = false;
   });
 
   return card;
+}
+
+/* ---------- 유틸 ---------- */
+function formatSavedDate(isoString) {
+  if (!isoString) return "";
+  const d = new Date(isoString);
+  if (Number.isNaN(d.getTime())) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}.${m}.${day} 담음`;
+}
+
+function googleMapsUrl(row) {
+  const query = row.lat && row.lng
+    ? `${row.lat},${row.lng}`
+    : `${row.place_name || ""} ${row.address || ""}`.trim();
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
 function escapeHtml(str) {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>찜 목록 — 여기찜</title>
+<title>맛집주머니 — 여기찜</title>
 <style>
   @font-face {
     font-family: 'HakgyoansimDunggeunmiso';
@@ -103,6 +103,7 @@
   }
 
   .place-card {
+    position: relative;
     background: #fff;
     border-radius: var(--radius-lg);
     padding: 18px;
@@ -117,6 +118,7 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 4px;
+    padding-right: 30px;
   }
 
   .category-chip {
@@ -128,20 +130,38 @@
     border-radius: var(--radius-sm);
   }
 
-  .remove-btn {
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
-    border: 1.5px solid var(--coral);
-    background: #fff;
-    color: var(--coral);
-    padding: 6px 14px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
+  .saved-date {
+    font-size: 12px;
+    opacity: 0.55;
+    font-weight: 600;
   }
 
-  .remove-btn:hover { background: var(--coral); color: #fff; }
+  .remove-x {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: var(--cream);
+    color: var(--warmgray);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  .remove-x:hover {
+    background: var(--coral);
+    color: #fff;
+    transform: rotate(90deg);
+  }
+
+  .remove-x:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
   .place-name {
     font-size: 17px;
@@ -162,13 +182,11 @@
     margin-top: 10px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     font-size: 12.5px;
     border-top: 1px solid var(--cream);
     padding-top: 10px;
   }
-
-  .place-phone { opacity: 0.75; }
 
   .place-link {
     text-decoration: none;
@@ -192,12 +210,20 @@
   .state-msg .btn-link {
     display: inline-block;
     margin-top: 14px;
+    font-family: inherit;
+    font-size: 14px;
     font-weight: 700;
-    color: var(--coral);
+    color: #fff;
+    background: var(--coral);
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
     text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
   }
 
-  .state-msg .btn-link:hover { text-decoration: underline; }
+  .state-msg .btn-link:hover { transform: translateY(-2px); }
 
   /* ---------- Tablet (>=768px) ---------- */
   @media (min-width: 768px) {
@@ -228,8 +254,8 @@
   </header>
 
   <main>
-    <h1 class="page-title heading">찜 목록</h1>
-    <p class="page-desc">담아둔 맛집을 한눈에 모아봤어요.</p>
+    <h1 class="page-title heading">맛집주머니</h1>
+    <p class="page-desc">내가 담은 맛집을 한눈에 모아봤어요.</p>
 
     <p class="state-msg" id="loginRequired" hidden>
       로그인 후 이용할 수 있어요.<br>오른쪽 위 로그인 버튼을 눌러주세요.
@@ -239,8 +265,8 @@
       <p class="result-meta" id="resultMeta"></p>
       <div class="card-grid" id="cardGrid"></div>
       <p class="state-msg" id="emptyState" hidden>
-        아직 담은 맛집이 없어요.<br>
-        <a class="btn-link" href="place-search.html">맛집 담으러 가기 →</a>
+        아직 담은 맛집이 없어요. 검색하러 가볼까요?<br>
+        <a class="btn-link" href="place-search.html">맛집 검색하러 가기</a>
       </p>
     </section>
   </main>
@@ -249,6 +275,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="auth.js"></script>
   <script src="saved-places-store.js"></script>
-  <script src="saved-places.js"></script>
+  <script src="Mypage.js"></script>
 </body>
 </html>

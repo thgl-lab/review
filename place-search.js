@@ -15,7 +15,6 @@ const FOOD_CATEGORY_CODE = "FD6"; // 음식점 카테고리 코드
 const PAGE_SIZE = 15;
 const CATEGORY_RADIUS = 2000; // m, 카테고리 검색 반경
 const DEFAULT_COORD = { x: 126.9779692, y: 37.5662952 }; // 서울시청 (위치 접근 실패 시 대체 좌표)
-const SAVED_PLACES_KEY = "yeogijjim_saved_places";
 
 function hasValidApiKey() {
   return (
@@ -234,7 +233,7 @@ async function runSearch(endpoint, params, triggerBtn) {
     }
 
     const data = await res.json();
-    renderResults(data);
+    await renderResults(data);
   } catch (err) {
     showError("네트워크 오류로 검색에 실패했어요. 잠시 후 다시 시도해주세요.");
     console.error(err);
@@ -247,7 +246,7 @@ async function runSearch(endpoint, params, triggerBtn) {
 }
 
 /* ---------- 결과 렌더링 ---------- */
-function renderResults(data) {
+async function renderResults(data) {
   const places = data.documents || [];
   const meta = data.meta || {};
 
@@ -265,9 +264,9 @@ function renderResults(data) {
   el.emptyState.hidden = true;
   el.resultMeta.textContent = `${state.lastQueryLabel} · 총 ${Number(meta.pageable_count || 0).toLocaleString()}건`;
 
-  const savedIds = getSavedIds();
+  const savedIds = await getSavedIds();
   places.forEach((place) => {
-    el.cardGrid.appendChild(buildCard(place, savedIds.has(place.id)));
+    el.cardGrid.appendChild(buildCard(place, savedIds.has(String(place.id))));
   });
 
   state.isEnd = !!meta.is_end;
@@ -306,39 +305,50 @@ function buildCard(place, isSaved) {
   return card;
 }
 
-/* ---------- 담기 (localStorage 임시 저장, 로그인 필요) ---------- */
+/* ---------- 담기 (Supabase saved_places 테이블, 로그인 필요) ---------- */
 async function handleSaveClick(btn) {
   const auth = window.YeogiJjimAuth;
   const user = auth ? await auth.getCurrentUser() : null;
 
   if (!user) {
-    if (auth) auth.openLoginModal("담기는 로그인 후 이용할 수 있어요.");
+    if (auth) auth.openLoginModal("로그인하면 담을 수 있어요.");
     return;
   }
 
-  toggleSave(btn);
+  await toggleSave(btn, user);
 }
 
-function getSavedIds() {
-  const list = JSON.parse(localStorage.getItem(SAVED_PLACES_KEY) || "[]");
-  return new Set(list.map((p) => p.id));
+async function getSavedIds() {
+  const auth = window.YeogiJjimAuth;
+  const user = auth ? await auth.getCurrentUser() : null;
+  if (!user || !window.YeogiJjimSaves) return new Set();
+  return window.YeogiJjimSaves.listSavedIds(user.id);
 }
 
-function toggleSave(btn) {
+async function toggleSave(btn, user) {
+  if (btn.disabled || !window.YeogiJjimSaves) return;
   const place = JSON.parse(btn.dataset.place);
-  const list = JSON.parse(localStorage.getItem(SAVED_PLACES_KEY) || "[]");
-  const idx = list.findIndex((p) => p.id === place.id);
+  const wasSaved = btn.classList.contains("saved");
 
-  if (idx >= 0) {
-    list.splice(idx, 1);
+  btn.disabled = true;
+  const { error } = wasSaved
+    ? await window.YeogiJjimSaves.unsave(user.id, place.id)
+    : await window.YeogiJjimSaves.save(user.id, place);
+  btn.disabled = false;
+
+  if (error) {
+    console.error("[여기찜] 담기 처리 실패", error);
+    alert("담기 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+    return;
+  }
+
+  if (wasSaved) {
     btn.classList.remove("saved");
     btn.textContent = "담기";
   } else {
-    list.push(place);
     btn.classList.add("saved");
     btn.textContent = "담음 ✓";
   }
-  localStorage.setItem(SAVED_PLACES_KEY, JSON.stringify(list));
 }
 
 /* ---------- 에러 표시 ---------- */
