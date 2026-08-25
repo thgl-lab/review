@@ -13,7 +13,7 @@ window.YeogiJjimSaves = (function () {
     return window.YeogiJjimAuth ? window.YeogiJjimAuth.getClient() : null;
   }
 
-  function toRow(userId, place) {
+  function toRow(userId, place, tags) {
     return {
       user_id: userId,
       kakao_place_id: String(place.id),
@@ -24,7 +24,7 @@ window.YeogiJjimSaves = (function () {
       lng: place.x ? Number(place.x) : null,
       place_url: place.place_url || null,
       phone: place.phone || null,
-      situation_tags: [],
+      situation_tags: Array.isArray(tags) ? tags : [],
     };
   }
 
@@ -45,10 +45,10 @@ window.YeogiJjimSaves = (function () {
     return new Set((data || []).map((row) => row.kakao_place_id));
   }
 
-  async function save(userId, place) {
+  async function save(userId, place, tags) {
     const client = getClient();
     if (!client || !userId) return { error: new Error("로그인이 필요해요.") };
-    return client.from("saved_places").insert(toRow(userId, place));
+    return client.from("saved_places").insert(toRow(userId, place, tags));
   }
 
   async function unsave(userId, kakaoPlaceId) {

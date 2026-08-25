@@ -126,7 +126,22 @@ function renderList() {
     ? `"${activeFilter}" 태그 · ${visibleRows.length}곳`
     : `담은 맛집 ${visibleRows.length}곳`;
 
-  visibleRows.forEach((row) => el.cardGrid.appendChild(buildCard(row)));
+  visibleRows.forEach((row) => {
+    const card = buildCard(row);
+    el.cardGrid.appendChild(card);
+    if (typeof loadPlacePhoto === "function") loadPlacePhoto(card, toPhotoPlace(row));
+  });
+}
+
+/* google-reviews.js#loadPlacePhoto가 기대하는 카카오 검색 결과 형태로 맞춰준다 */
+function toPhotoPlace(row) {
+  return {
+    id: row.kakao_place_id,
+    place_name: row.place_name,
+    category_name: row.category_name,
+    x: row.lng,
+    y: row.lat,
+  };
 }
 
 function buildCard(row) {
@@ -138,6 +153,10 @@ function buildCard(row) {
   const address = row.address || "주소 정보 없음";
 
   card.innerHTML = `
+    <div class="card-photo">
+      <span class="photo-fallback" aria-hidden="true">🍽️</span>
+      <img class="place-photo" alt="" loading="lazy" hidden>
+    </div>
     <button type="button" class="remove-x" aria-label="찜 삭제">✕</button>
     <div class="card-top">
       <span class="category-chip">${escapeHtml(categoryChip)}</span>
@@ -148,7 +167,7 @@ function buildCard(row) {
     <p class="place-category">${escapeHtml(row.category_name || "")}</p>
     <div class="tag-edit-row"></div>
     <div class="card-footer">
-      <a class="place-link" href="${escapeHtml(googleMapsUrl(row))}" target="_blank" rel="noopener noreferrer">구글맵 보기</a>
+      <a class="place-link" href="${escapeHtml(kakaoMapUrl(row))}" target="_blank" rel="noopener noreferrer">카카오맵에서 보기</a>
     </div>
   `;
 
@@ -156,6 +175,12 @@ function buildCard(row) {
 
   card.querySelector(".remove-x").addEventListener("click", async (e) => {
     const btn = e.currentTarget;
+
+    const ok = window.YeogiJjimConfirm
+      ? await window.YeogiJjimConfirm.ask(`"${row.place_name}" 담기를 취소할까요?`)
+      : true;
+    if (!ok) return;
+
     btn.disabled = true;
 
     const { error } = await window.YeogiJjimSaves.removeById(row.id);
@@ -224,11 +249,12 @@ function formatSavedDate(isoString) {
   return `${y}.${m}.${day} 담음`;
 }
 
-function googleMapsUrl(row) {
-  const query = row.lat && row.lng
-    ? `${row.lat},${row.lng}`
-    : `${row.place_name || ""} ${row.address || ""}`.trim();
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+function kakaoMapUrl(row) {
+  if (row.place_url) return row.place_url;
+  if (row.lat && row.lng) {
+    return `https://map.kakao.com/link/map/${encodeURIComponent(row.place_name || "")},${row.lat},${row.lng}`;
+  }
+  return `https://map.kakao.com/link/search/${encodeURIComponent(row.place_name || row.address || "")}`;
 }
 
 function escapeHtml(str) {

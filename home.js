@@ -59,7 +59,9 @@ async function initRanking() {
 
   grid.innerHTML = "";
   data.forEach((row, i) => {
-    grid.appendChild(buildRankCard(row, i + 1, savedIds.has(String(row.kakao_place_id))));
+    const card = buildRankCard(row, i + 1, savedIds.has(String(row.kakao_place_id)));
+    grid.appendChild(card);
+    if (typeof loadPlacePhoto === "function") loadPlacePhoto(card, rankRowToPlace(row));
   });
 }
 
@@ -70,6 +72,10 @@ function buildRankCard(row, rank, isSaved) {
   const categoryChip = leafCategory(row.category_name);
 
   card.innerHTML = `
+    <div class="card-photo">
+      <span class="photo-fallback" aria-hidden="true">🍽️</span>
+      <img class="place-photo" alt="" loading="lazy" hidden>
+    </div>
     <span class="rank-badge">${rank}위</span>
     <div class="rank-card-top">
       <span class="rank-category">${escapeHtml(categoryChip)}</span>
@@ -77,7 +83,10 @@ function buildRankCard(row, rank, isSaved) {
     </div>
     <h3 class="rank-name">${escapeHtml(row.place_name)}</h3>
     <p class="rank-address">${escapeHtml(row.address || "주소 정보 없음")}</p>
-    <button type="button" class="rank-save-btn ${isSaved ? "saved" : ""}">${isSaved ? "담음 ✓" : "담기"}</button>
+    <div class="rank-actions">
+      <button type="button" class="rank-save-btn ${isSaved ? "saved" : ""}">${isSaved ? "담음 ✓" : "담기"}</button>
+      ${kakaoMapLink(row.place_url, row.place_name, row.lat, row.lng)}
+    </div>
   `;
 
   card.querySelector(".rank-save-btn").addEventListener("click", (e) => handleSaveClick(e.currentTarget, rankRowToPlace(row)));
@@ -230,7 +239,10 @@ function buildRecommendCard(place) {
     </div>
     <h3 class="rank-name">${escapeHtml(place.place_name)}</h3>
     <p class="rank-address">${escapeHtml(address)}</p>
-    <button type="button" class="rank-save-btn">담기</button>
+    <div class="rank-actions">
+      <button type="button" class="rank-save-btn">담기</button>
+      ${kakaoMapLink(place.place_url, place.place_name, place.y, place.x)}
+    </div>
   `;
 
   card.querySelector(".rank-save-btn").addEventListener("click", (e) => handleSaveClick(e.currentTarget, place));
@@ -239,39 +251,23 @@ function buildRecommendCard(place) {
 
 /* ---------- 담기 공통 처리 ---------- */
 async function handleSaveClick(btn, place) {
-  const auth = window.YeogiJjimAuth;
-  const user = auth ? await auth.getCurrentUser() : null;
-
-  if (!user) {
-    if (auth) auth.openLoginModal("로그인하면 담을 수 있어요.");
-    return;
-  }
-
-  if (btn.disabled || !window.YeogiJjimSaves) return;
-  const wasSaved = btn.classList.contains("saved");
-
-  btn.disabled = true;
-  const { error } = wasSaved
-    ? await window.YeogiJjimSaves.unsave(user.id, place.id)
-    : await window.YeogiJjimSaves.save(user.id, place);
-  btn.disabled = false;
-
-  if (error) {
-    console.error("[여기찜] 담기 처리 실패", error);
-    alert("담기 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
-    return;
-  }
-
-  if (wasSaved) {
-    btn.classList.remove("saved");
-    btn.textContent = "담기";
-  } else {
-    btn.classList.add("saved");
-    btn.textContent = "담음 ✓";
-  }
+  await window.YeogiJjimSaveFlow.handleSaveClick(btn, place);
 }
 
 /* ---------- 유틸 ---------- */
+function kakaoMapUrl(placeUrl, name, lat, lng) {
+  if (placeUrl) return placeUrl;
+  if (lat && lng) return `https://map.kakao.com/link/map/${encodeURIComponent(name || "")},${lat},${lng}`;
+  if (name) return `https://map.kakao.com/link/search/${encodeURIComponent(name)}`;
+  return "";
+}
+
+function kakaoMapLink(placeUrl, name, lat, lng) {
+  const url = kakaoMapUrl(placeUrl, name, lat, lng);
+  if (!url) return "";
+  return `<a class="rank-map-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">카카오맵에서 보기</a>`;
+}
+
 function leafCategory(categoryName) {
   const segments = (categoryName || "").split(">").map((s) => s.trim()).filter(Boolean);
   return segments[segments.length - 1] || "기타";

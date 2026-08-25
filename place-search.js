@@ -266,7 +266,9 @@ async function renderResults(data) {
 
   const savedIds = await getSavedIds();
   places.forEach((place) => {
-    el.cardGrid.appendChild(buildCard(place, savedIds.has(String(place.id))));
+    const card = buildCard(place, savedIds.has(String(place.id)));
+    el.cardGrid.appendChild(card);
+    loadPlacePhoto(card, place);
   });
 
   state.isEnd = !!meta.is_end;
@@ -283,6 +285,10 @@ function buildCard(place, isSaved) {
   const address = place.road_address_name || place.address_name || "주소 정보 없음";
 
   card.innerHTML = `
+    <div class="card-photo">
+      <span class="photo-fallback" aria-hidden="true">🍽️</span>
+      <img class="place-photo" alt="" loading="lazy" hidden>
+    </div>
     <div class="card-top">
       <span class="category-chip">${escapeHtml(categoryChip)}</span>
       <button type="button" class="save-btn ${isSaved ? "saved" : ""}" data-id="${escapeHtml(place.id)}">
@@ -307,15 +313,8 @@ function buildCard(place, isSaved) {
 
 /* ---------- 담기 (Supabase saved_places 테이블, 로그인 필요) ---------- */
 async function handleSaveClick(btn) {
-  const auth = window.YeogiJjimAuth;
-  const user = auth ? await auth.getCurrentUser() : null;
-
-  if (!user) {
-    if (auth) auth.openLoginModal("로그인하면 담을 수 있어요.");
-    return;
-  }
-
-  await toggleSave(btn, user);
+  const place = JSON.parse(btn.dataset.place);
+  await window.YeogiJjimSaveFlow.handleSaveClick(btn, place);
 }
 
 async function getSavedIds() {
@@ -323,32 +322,6 @@ async function getSavedIds() {
   const user = auth ? await auth.getCurrentUser() : null;
   if (!user || !window.YeogiJjimSaves) return new Set();
   return window.YeogiJjimSaves.listSavedIds(user.id);
-}
-
-async function toggleSave(btn, user) {
-  if (btn.disabled || !window.YeogiJjimSaves) return;
-  const place = JSON.parse(btn.dataset.place);
-  const wasSaved = btn.classList.contains("saved");
-
-  btn.disabled = true;
-  const { error } = wasSaved
-    ? await window.YeogiJjimSaves.unsave(user.id, place.id)
-    : await window.YeogiJjimSaves.save(user.id, place);
-  btn.disabled = false;
-
-  if (error) {
-    console.error("[여기찜] 담기 처리 실패", error);
-    alert("담기 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
-    return;
-  }
-
-  if (wasSaved) {
-    btn.classList.remove("saved");
-    btn.textContent = "담기";
-  } else {
-    btn.classList.add("saved");
-    btn.textContent = "담음 ✓";
-  }
 }
 
 /* ---------- 에러 표시 ---------- */
